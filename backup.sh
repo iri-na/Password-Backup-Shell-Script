@@ -15,19 +15,18 @@ then
   exit
 fi
 
-# [TASK 1]
+# Set up variables for the command line arguments
 targetDirectory=$1
 destinationDirectory=$2
 
-# [TASK 2]
+# Print argument variables to confirm
 echo "Our target directory is $1"
 echo "Our destination directory is $2"
 
-# [TASK 3]
-# current timestamp (in seconds)
+# Current timestamp (in seconds)
 currentTS=`date +%s`
 
-# [TASK 4]
+# This is what our final backup files will be called
 backupFileName="backup-$currentTS.tar.gz"
 
 # We're going to:
@@ -35,43 +34,35 @@ backupFileName="backup-$currentTS.tar.gz"
   # 2: Create the backup file
   # 3: Move the backup file to the destination directory
 
-# To make things easier, we will define some useful variables...
-
-# [TASK 5]
+# Current working directory absolute path
 origAbsPath=`pwd`
 
-# [TASK 6]
 # To get absolute path of destination directory
-# cd $destinationDirectory
-# destDirAbsPath=`pwd`
-# cd ..
-destDirAbsPath="$(pwd)/$destinationDirectory"
+cd $destinationDirectory
+destDirAbsPath=`pwd`
 
-# [TASK 7]
 # To get absolute path of target directory
-# cd $targetDirectory
-# targDirAbsPath=`pwd`
-# cd ..
-targDirAbsPath="$pwd/$targetDirectory"
+cd $targetDirectory
+targDirAbsPath=`pwd`
 
-# [TASK 8]
-# time stamp from 24 hours ago
+# Get time stamp from 24 hours ago
 yesterdayTS=$(($currentTS - 24 * 60 * 60))
 
+# toBackup is an array, in which we will store the names
+# of the files that need to be backed up
 declare -a toBackup
 
-for file in $(ls) # [TASK 9]
+for file in $(ls targDirAbsPath)
 do
-  # [TASK 10]
   fileLastModified=`date -r $file +%s`
   if [[ $fileLastModified > $yesterdayTS ]]
   then
-    # [TASK 11]
     toBackup+=($file)
   fi
 done
 
-# [TASK 12]
+# Now that we have an array of file names that need
+# backing up, let us archive and compress each of these files
 tar -czvf $backupFileName ${toBackup[@]}
 
 # but also consider: 
@@ -80,7 +71,7 @@ tar -czvf $backupFileName ${toBackup[@]}
 #     zip -r $backupFileName $file
 # done
 
-# [TASK 13]
 mv $backupFileName $destDirAbsPath
 
-# Congratulations!
+# Add the execution of this file, plus args, to cron table
+# and schedule to run every 24 hours
