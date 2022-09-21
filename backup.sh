@@ -52,7 +52,7 @@ yesterdayTS=$(($currentTS - 24 * 60 * 60))
 # of the files that need to be backed up
 declare -a toBackup
 
-for file in $(ls targDirAbsPath)
+for file in $(ls $targDirAbsPath)
 do
   fileLastModified=`date -r $file +%s`
   if [[ $fileLastModified > $yesterdayTS ]]
